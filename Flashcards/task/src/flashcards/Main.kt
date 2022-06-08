@@ -1,12 +1,10 @@
 package flashcards
 
-
 fun main() {
-    println(
-        """
-        Card:
-        purchase
-        Definition:
-        buy""".trimIndent()
-    )
+    val term = readln()
+    if (readln() == readln()) {
+        println("right")
+    } else {
+        println("wrong")
+    }
 }
