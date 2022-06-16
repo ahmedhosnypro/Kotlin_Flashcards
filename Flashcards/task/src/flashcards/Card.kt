@@ -1,10 +1,9 @@
 package flashcards
 
 class Card {
-    val term: String
-    var definition: String
-    var wrongAnswersCount = 0
-        private set
+     val term: String
+     var definition: String
+     var wrongAnswersCount = 0
 
     constructor(term: String, definition: String) {
         this.term = term

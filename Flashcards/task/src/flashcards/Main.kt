@@ -6,43 +6,16 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 import java.util.function.Consumer
-import java.util.stream.Collectors
 
-private const val CHECK_FILE_NAME_STRING = "File name:"
+private const val STRING_FILE_NAME = "File name:"
 
 object Main {
     private var logs = StringBuilder()
-    private var cards = ArrayList<Card>()
+    private var cards = mutableListOf<Card>()
 
     @JvmStatic
     fun main(args: Array<String>) {
-        if (args.isNotEmpty()) {
-            var importPath = ""
-            var exportPath = ""
-            var i = 0
-            while (i < args.size) {
-                if (args[i].equals("-import", ignoreCase = true)) {
-                    importPath = args[i + 1]
-                }
-                if (args[i].equals("-export", ignoreCase = true)) {
-                    exportPath = args[i + 1]
-                }
-                i += 2
-            }
-            if (importPath.isNotEmpty() && exportPath.isNotEmpty()) {
-                importCards(importPath)
-                startAction()
-                exportCards(exportPath)
-            } else if (importPath.isNotEmpty()) {
-                importCards(importPath)
-                startAction()
-            } else if (exportPath.isNotEmpty()) {
-                startAction()
-                exportCards(exportPath)
-            }
-        } else {
-            startAction()
-        }
+        startAction()
     }
 
     private fun startAction() {
@@ -57,15 +30,11 @@ object Main {
                 startAction()
             }
             "import" -> {
-                print(CHECK_FILE_NAME_STRING)
-                val filePath = read()
-                importCards(filePath)
+                importCards()
                 startAction()
             }
             "export" -> {
-                print(CHECK_FILE_NAME_STRING)
-                val filePath = read()
-                exportCards(filePath)
+                exportCards()
                 startAction()
             }
             "ask" -> {
@@ -129,9 +98,11 @@ object Main {
         }
     }
 
-    private fun importCards(filePath: String) {
+    private fun importCards() {
         var importedCards = 0
-        val file = File(filePath)
+        print(STRING_FILE_NAME)
+        val fileName = read()
+        val file = File(fileName)
         if (file.exists()) {
             try {
                 Scanner(file).use { fileScanner ->
@@ -168,29 +139,18 @@ object Main {
         return 1
     }
 
-    private fun exportCards(filePath: String) {
+    private fun exportCards() {
         var exportCards = 0
-        val file = File(filePath)
+        print(STRING_FILE_NAME)
+        val fileName = read()
+        val file = File(fileName)
         try {
             FileWriter(file).use { writer ->
-                cards.withIndex().forEach { (index, card) ->
+                for ((index, card) in cards.withIndex()) {
                     if (index == cards.size - 1) {
-                        writer.write(
-                            """
-                            ${card.term}
-                            ${card.definition}
-                            ${card.wrongAnswersCount}
-                            """.trimIndent()
-                        )
+                        writer.write((card.term + "\n" + card.definition) + "\n" + card.wrongAnswersCount)
                     } else {
-                        writer.write(
-                            """
-                            ${card.term}
-                            ${card.definition}
-                            ${card.wrongAnswersCount}
-                            
-                            """.trimIndent()
-                        )
+                        writer.write(((card.term + "\n" + card.definition) + "\n" + card.wrongAnswersCount) + "\n")
                     }
                     exportCards++
                 }
@@ -224,7 +184,7 @@ object Main {
     }
 
     private fun log() {
-        print(CHECK_FILE_NAME_STRING)
+        print(STRING_FILE_NAME)
         val fileName = read()
         try {
             FileWriter(fileName).use { writer ->
@@ -237,7 +197,7 @@ object Main {
     }
 
     private fun hardestCard() {
-        if (cards.stream().anyMatch { card: Card -> card.wrongAnswersCount > 0 }) {
+        if (cards.stream().anyMatch { it.wrongAnswersCount > 0 }) {
             val maxWrongAnswersLevel = wrongAnswersLevel()
             val hardestCard = getHardCards(maxWrongAnswersLevel)
             val stats = StringBuilder()
@@ -278,7 +238,9 @@ object Main {
     }
 
     private fun findDefinition(definition: String): Boolean {
-        return cards.stream().anyMatch { card: Card -> card.definition == definition }
+        return cards.stream().anyMatch { card: Card ->
+            card.definition == definition
+        }
     }
 
     private fun rightCard(definition: String): String {
@@ -290,14 +252,15 @@ object Main {
         return ""
     }
 
-    private fun wrongAnswersLevel(): Int {
-        return cards.stream().mapToInt(Card::wrongAnswersCount).reduce(
-            0
-        ) { a: Int, b: Int -> a.coerceAtLeast(b) }
-    }
+    private fun wrongAnswersLevel(): Int = cards.stream()
+        .mapToInt { it.wrongAnswersCount }
+        .reduce(0) { a: Int, b: Int ->
+            a.coerceAtLeast(b)
+        }
 
-    private fun getHardCards(maxWrongAnswersLevel: Int): ArrayList<String> {
-        return cards.stream().filter { card: Card -> card.wrongAnswersCount == maxWrongAnswersLevel }.map(Card::term)
-            .collect(Collectors.toCollection { ArrayList() })
-    }
+
+    private fun getHardCards(maxWrongAnswersLevel: Int): MutableList<String> = cards.stream()
+        .filter { card: Card -> card.wrongAnswersCount == maxWrongAnswersLevel }
+        .map { it.term }
+        .toList()
 }
