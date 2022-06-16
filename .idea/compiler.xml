@@ -10,6 +10,51 @@
       <module name="Flashcards.Flashcards-task-build-test-results.main" target="11" />
       <module name="Flashcards.Flashcards-task-build-tmp.main" target="11" />
       <module name="Flashcards.Flashcards-task.main" target="11" />
+      <module name="Flashcards.Topics-Errors_in_programs-Fix_compile-time_errors.main" target="11" />
+      <module name="Flashcards.Topics-Errors_in_programs-It_can't_be_zero.main" target="11" />
+      <module name="Flashcards.Topics-Errors_in_programs-Syntax_issues.main" target="11" />
+      <module name="Flashcards.Topics-Errors_in_programs-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Errors_in_programs-What's_wrong.main" target="11" />
+      <module name="Flashcards.Topics-For_loop_and_lists-Circular_shift.main" target="11" />
+      <module name="Flashcards.Topics-For_loop_and_lists-For_loops_task.main" target="11" />
+      <module name="Flashcards.Topics-For_loop_and_lists-Individual_taxes.main" target="11" />
+      <module name="Flashcards.Topics-For_loop_and_lists-Right_Rotation.main" target="11" />
+      <module name="Flashcards.Topics-For_loop_and_lists-Sum_of_numbers.main" target="11" />
+      <module name="Flashcards.Topics-For_loop_and_lists-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Functions_as_objects-Continuation-Passing_Style.main" target="11" />
+      <module name="Flashcards.Topics-Functions_as_objects-Function_generator.main" target="11" />
+      <module name="Flashcards.Topics-Functions_as_objects-Kotlin_function_type.main" target="11" />
+      <module name="Flashcards.Topics-Functions_as_objects-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Integers_in_action-Declaring_Long.main" target="11" />
+      <module name="Flashcards.Topics-Integers_in_action-Desks.main" target="11" />
+      <module name="Flashcards.Topics-Integers_in_action-Next_even_number.main" target="11" />
+      <module name="Flashcards.Topics-Integers_in_action-Reversing_a_number.main" target="11" />
+      <module name="Flashcards.Topics-Integers_in_action-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Integers_in_action-Time_difference.main" target="11" />
+      <module name="Flashcards.Topics-Lambda_expressions-Range_multiplication.main" target="11" />
+      <module name="Flashcards.Topics-Lambda_expressions-Theory.main" target="11" />
+      <module name="Flashcards.Topics-List-Number_of_occurrences.main" target="11" />
+      <module name="Flashcards.Topics-List-Sum_of_numbers.main" target="11" />
+      <module name="Flashcards.Topics-List-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Map-Map_creation.main" target="11" />
+      <module name="Flashcards.Topics-Map-Products_in_store.main" target="11" />
+      <module name="Flashcards.Topics-Map-Sum_of_values.main" target="11" />
+      <module name="Flashcards.Topics-Map-The_truth_is.main" target="11" />
+      <module name="Flashcards.Topics-Map-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_List-Add_them_all.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_List-Banana.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_List-New_List.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_List-Remove_us.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_List-Theory.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_Map-Application.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_Map-Application__1_.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_Map-Help_the_robot.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_Map-Removing.main" target="11" />
+      <module name="Flashcards.Topics-Mutable_Map-Theory.main" target="11" />
+      <module name="Flashcards.Topics-The_Math_library-Existing_functions.main" target="11" />
+      <module name="Flashcards.Topics-The_Math_library-National_assembly.main" target="11" />
+      <module name="Flashcards.Topics-The_Math_library-Sine_and_cosine.main" target="11" />
+      <module name="Flashcards.Topics-The_Math_library-Theory.main" target="11" />
       <module name="Flashcards.util.main" target="11" />
     </bytecodeTargetLevel>
   </component>

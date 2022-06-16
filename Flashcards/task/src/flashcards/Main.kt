@@ -1,26 +1,303 @@
 package flashcards
 
-fun main() {
-    println("Input the number of cards:")
-    val cards = readln().toInt()
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileWriter
+import java.io.IOException
+import java.util.*
+import java.util.function.Consumer
+import java.util.stream.Collectors
 
-    val terms = mutableListOf<String>()
-    val definitions = mutableListOf<String>()
+private const val CHECK_FILE_NAME_STRING = "File name:"
 
-    for (i in 1..cards) {
-        println("Card #$i:")
-        terms.add(readln())
-        println("The definition for card #$i:")
-        definitions.add(readln())
+object Main {
+    private var logs = StringBuilder()
+    private var cards = ArrayList<Card>()
+
+    @JvmStatic
+    fun main(args: Array<String>) {
+        if (args.isNotEmpty()) {
+            var importPath = ""
+            var exportPath = ""
+            var i = 0
+            while (i < args.size) {
+                if (args[i].equals("-import", ignoreCase = true)) {
+                    importPath = args[i + 1]
+                }
+                if (args[i].equals("-export", ignoreCase = true)) {
+                    exportPath = args[i + 1]
+                }
+                i += 2
+            }
+            if (importPath.isNotEmpty() && exportPath.isNotEmpty()) {
+                importCards(importPath)
+                startAction()
+                exportCards(exportPath)
+            } else if (importPath.isNotEmpty()) {
+                importCards(importPath)
+                startAction()
+            } else if (exportPath.isNotEmpty()) {
+                startAction()
+                exportCards(exportPath)
+            }
+        } else {
+            startAction()
+        }
     }
 
-    for (i in 0 until cards) {
-        println("Print the definition of \"${terms[i]}\"")
-        val userInput = readln()
-        if (userInput == definitions[i]) {
-            println("Correct!")
-        } else {
-            println("Wrong. The right answer is \"${definitions[i]}\".")
+    private fun startAction() {
+        print("\nInput the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):")
+        when (read()) {
+            "add" -> {
+                addCard()
+                startAction()
+            }
+            "remove" -> {
+                removeCard()
+                startAction()
+            }
+            "import" -> {
+                print(CHECK_FILE_NAME_STRING)
+                val filePath = read()
+                importCards(filePath)
+                startAction()
+            }
+            "export" -> {
+                print(CHECK_FILE_NAME_STRING)
+                val filePath = read()
+                exportCards(filePath)
+                startAction()
+            }
+            "ask" -> {
+                ask()
+                startAction()
+            }
+            "log" -> {
+                log()
+                startAction()
+            }
+            "hardest card" -> {
+                hardestCard()
+                startAction()
+            }
+            "reset stats" -> {
+                resetStats()
+                startAction()
+            }
+            "exit" -> println("Bye bye!")
+            else -> startAction()
         }
+    }
+
+    private fun addCard() {
+        print("The card:")
+        val term = read()
+        for (card in cards) {
+            if (card.term == term) {
+                print("The card \"$term\" already exists.")
+                return
+            }
+        }
+        print("The definition of the card:")
+        val definition = read()
+        for (card in cards) {
+            if (card.definition == definition) {
+                print("The definition \"$definition\" already exists.")
+                return
+            }
+        }
+        cards.add(Card(term, definition))
+        print("The pair (\"$term\":\"$definition\") has been added.")
+    }
+
+    private fun removeCard() {
+        print("Which card?")
+        val term = read()
+        var isRemoved = false
+        val it = cards.iterator()
+        while (it.hasNext()) {
+            val card = it.next()
+            if (card.term == term) {
+                it.remove()
+                print("The card has been removed.")
+                isRemoved = true
+                break
+            }
+        }
+        if (!isRemoved) {
+            print("Can't remove \"$term\": there is no such card.")
+        }
+    }
+
+    private fun importCards(filePath: String) {
+        var importedCards = 0
+        val file = File(filePath)
+        if (file.exists()) {
+            try {
+                Scanner(file).use { fileScanner ->
+                    while (fileScanner.hasNext()) {
+                        val term = fileScanner.nextLine()
+                        val definition = fileScanner.nextLine()
+                        val wrongAnswers = fileScanner.nextLine().toInt()
+                        importedCards += importedCard(term, definition, wrongAnswers)
+                    }
+                    print("$importedCards cards have been loaded.")
+                }
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            }
+        } else {
+            print("File not found.")
+        }
+    }
+
+    private fun importedCard(term: String, definition: String, wrongAnswers: Int): Int {
+        for (card in cards) {
+            if (card.term == term) {
+                card.definition = definition
+                card.setWrongAnswers(wrongAnswers)
+                return 1
+            }
+        }
+        for (card in cards) {
+            if (card.definition == definition) {
+                return 0
+            }
+        }
+        cards.add(Card(term, definition, wrongAnswers))
+        return 1
+    }
+
+    private fun exportCards(filePath: String) {
+        var exportCards = 0
+        val file = File(filePath)
+        try {
+            FileWriter(file).use { writer ->
+                cards.withIndex().forEach { (index, card) ->
+                    if (index == cards.size - 1) {
+                        writer.write(
+                            """
+                            ${card.term}
+                            ${card.definition}
+                            ${card.wrongAnswersCount}
+                            """.trimIndent()
+                        )
+                    } else {
+                        writer.write(
+                            """
+                            ${card.term}
+                            ${card.definition}
+                            ${card.wrongAnswersCount}
+                            
+                            """.trimIndent()
+                        )
+                    }
+                    exportCards++
+                }
+                print("$exportCards cards have been saved.")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun ask() {
+        print("How many times to ask?")
+        val times = read().toInt()
+        for (i in 0 until times) {
+            print("Print the definition of \"" + cards[i].term + "\":")
+            val definition = read()
+            if (definition == cards[i].definition) {
+                print("Correct!")
+            } else if (findDefinition(definition)) {
+                print(
+                    "Wrong. The right answer is \"" + cards[i].definition + "\", but your definition is correct for \"" + rightCard(
+                        definition
+                    ) + "\""
+                )
+                cards[i].incrementWrongAnswers()
+            } else {
+                print("Wrong. The right answer is \"" + cards[i].definition + "\".")
+                cards[i].incrementWrongAnswers()
+            }
+        }
+    }
+
+    private fun log() {
+        print(CHECK_FILE_NAME_STRING)
+        val fileName = read()
+        try {
+            FileWriter(fileName).use { writer ->
+                writer.write(logs.toString())
+                print("The log has been saved.")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun hardestCard() {
+        if (cards.stream().anyMatch { card: Card -> card.wrongAnswersCount > 0 }) {
+            val maxWrongAnswersLevel = wrongAnswersLevel()
+            val hardestCard = getHardCards(maxWrongAnswersLevel)
+            val stats = StringBuilder()
+            if (hardestCard.size > 1) {
+                stats.append("The hardest cards are ")
+                hardestCard.forEach(Consumer { term: String? ->
+                    stats.append("\"").append(term).append("\", ")
+                })
+                stats.replace(stats.length - 2, stats.length - 1, "")
+                stats.append(". You have ").append(maxWrongAnswersLevel).append(" errors answering them.")
+            } else if (hardestCard.size == 1) {
+                stats.append("The hardest card is ")
+                hardestCard.forEach(Consumer { term: String? ->
+                    stats.append("\"").append(term).append("\"")
+                })
+                stats.append(". You have ").append(maxWrongAnswersLevel).append(" errors answering it.")
+            }
+            print(stats.toString())
+        } else {
+            print("There are no cards with errors.")
+        }
+    }
+
+    private fun resetStats() {
+        cards.forEach(Consumer { obj: Card -> obj.resetWrongAnswers() })
+        print("Card statistics have been reset.")
+    }
+
+    private fun print(output: String) {
+        println(output)
+        logs.append(output).append("\n")
+    }
+
+    private fun read(): String {
+        val input = readln()
+        logs.append(input).append("\n")
+        return input
+    }
+
+    private fun findDefinition(definition: String): Boolean {
+        return cards.stream().anyMatch { card: Card -> card.definition == definition }
+    }
+
+    private fun rightCard(definition: String): String {
+        for (card in cards) {
+            if (card.definition == definition) {
+                return card.term
+            }
+        }
+        return ""
+    }
+
+    private fun wrongAnswersLevel(): Int {
+        return cards.stream().mapToInt(Card::wrongAnswersCount).reduce(
+            0
+        ) { a: Int, b: Int -> a.coerceAtLeast(b) }
+    }
+
+    private fun getHardCards(maxWrongAnswersLevel: Int): ArrayList<String> {
+        return cards.stream().filter { card: Card -> card.wrongAnswersCount == maxWrongAnswersLevel }.map(Card::term)
+            .collect(Collectors.toCollection { ArrayList() })
     }
 }

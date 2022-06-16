@@ -1202,6 +1202,41 @@ files:
 
 
   learner_created: false
-feedback_link: https://hyperskill.org/projects/83/stages/462/implement#comment
+- name: src/flashcards/Card.kt
+  visible: true
+  text: |-
+    package flashcards
+
+    class Card {
+        val term: String
+        var definition: String
+        var wrongAnswersCount = 0
+            private set
+
+        constructor(term: String, definition: String) {
+            this.term = term
+            this.definition = definition
+        }
+
+        constructor(term: String, definition: String, wrongAnswers: Int) {
+            this.term = term
+            this.definition = definition
+            wrongAnswersCount = wrongAnswers
+        }
+
+        fun incrementWrongAnswers() {
+            wrongAnswersCount++
+        }
+
+        fun resetWrongAnswers() {
+            wrongAnswersCount = 0
+        }
+
+        fun setWrongAnswers(wrongAnswers: Int) {
+            wrongAnswersCount = wrongAnswers
+        }
+    }
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/7491#comment
 status: Unchecked
 record: -1
